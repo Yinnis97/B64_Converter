@@ -25,6 +25,10 @@ typedef struct PNG_HEADER
     uint8_t enlacement;
 }png_header_t;
 
+void Set_Blue_Text();
+void Set_Red_Text();
+void Clean_();
+
 uint32_t covert_bigEndian(uint8_t *data,int offset);
 
 

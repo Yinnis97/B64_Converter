@@ -33,11 +33,14 @@ int main()
     png_header.height = covert_bigEndian(in_file,20);
 
     // Print
+    Set_Blue_Text();
     printf(" %s\n %s\n Width %u\n Height : %u\n",
         png_header.png_sign,png_header.IHDR_verify,
         png_header.width,png_header.height);
 
     fclose(fileptr);
+    Clean_();
+
     return 0;
 }
 
