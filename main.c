@@ -20,24 +20,12 @@ int main()
     // Read binary data into file buffer
     fread(in_file,1,MAX_BUFFER_SIZE,fileptr);
 
-    // PNG signature first 8 bytes (0-7)
-    strncpy_s(png_header.png_sign,4,(char*)in_file+1,3); // first char is garbage PNG start at byte 1 not 0
-
-    // IHDR starts at byte 12 (12-15)
-    strncpy_s(png_header.IHDR_verify,5,(char*)in_file+12,4);
-
-    // Width starts at byte 16 (16-19)
-    png_header.width = covert_bigEndian(in_file,16);
-
-    // Height starts at byte 20 (20-23)
-    png_header.height = covert_bigEndian(in_file,20);
+    png_header = Get_PNG_Header((char*)in_file);
 
     // Print
     Set_Blue_Text();
-    printf(" %s\n %s\n Width %u\n Height : %u\n",
-        png_header.png_sign,png_header.IHDR_verify,
-        png_header.width,png_header.height);
-
+    Print_Header_Stats(png_header);
+    
     fclose(fileptr);
     Clean_();
 

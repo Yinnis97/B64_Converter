@@ -7,8 +7,17 @@
 #include "stdlib.h"
 #include "stdint.h"
 
-#define MAX_BUFFER_SIZE	8192
-#define MAX_USER_INPUT  50
+#define MAX_BUFFER_SIZE     	8192        // Maximum image size
+#define MAX_USER_INPUT          50          // Maximum user input path
+#define INDEX_START_PNG         1           // Start at 1 since PNG start at [1].
+#define INDEX_START_IHDR        12          // IHDR chunk start
+#define INDEX_START_WIDTH       16          // Width of the image in pixels. (4byte integers).
+#define INDEX_START_HEIGHT      20          // Height of the image in pixels. (4byte integers).
+#define INDEX_START_BITDEPTH    24          // The number of bits per sample or per palette index. (1byte integer). Valid values are 1, 2, 4, 8, and 16.
+#define INDEX_START_COLTYPE     25          // Describes the interpretation of the image data.  (1byte integer).  1 (palette used), 2 (color used), and 4 (alpha channel used). Valid values are 0, 2, 3, 4, and 6.
+#define INDEX_START_COMPMET     26          // Indicates the method used to compress the image data. (1byte integer). Always zero.
+#define INDEX_START_FILTMET     27          // Indicates the preprocessing method applied to the image data before compression. (1byte integer). Always zero.
+#define INDEX_START_INTERMET    28          // Indicates the transmission order of the image data. (1byte integer). 0 (no interlace) or 1 (Adam7 interlace).
 
 typedef struct PNG_HEADER
 {
@@ -18,18 +27,19 @@ typedef struct PNG_HEADER
     uint32_t width;
     uint32_t height;
     uint32_t totalSize;
-    uint8_t colorByteSize;
+    uint8_t bitDepth;
     uint8_t colorType;
     uint8_t compression;
     uint8_t filter;
-    uint8_t enlacement;
+    uint8_t interlace;
 }png_header_t;
 
 void Set_Blue_Text();
 void Set_Red_Text();
 void Clean_();
 
+void Print_Header_Stats(png_header_t png_hdr);
 uint32_t covert_bigEndian(uint8_t *data,int offset);
-
+png_header_t Get_PNG_Header(char* file_buffer);
 
 #endif
