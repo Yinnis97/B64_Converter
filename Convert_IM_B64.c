@@ -13,6 +13,7 @@ void Print_Header_Stats(png_header_t png_hdr)
         printf("Compression method  : %d\n",png_hdr.compression);
         printf("Filter method       : %d\n",png_hdr.filter);
         printf("Interlace method    : %d\n",png_hdr.interlace);
+        printf("Total size          : %llu bytes\n",png_hdr.totalSize);
         //printf("IDAT chunk size     : %u",png_hdr.idatSize);
     }
     else
@@ -22,10 +23,13 @@ void Print_Header_Stats(png_header_t png_hdr)
     }
 }
 
-void Get_Total_Image_Size(char* file_buffer,FILE *fileptr)
+size_t Get_Total_Image_Size(FILE *fileptr)
 {
-    (void) file_buffer; 
-    (void) fileptr;
+    // Move the cursor to the end (SEEK_END) to get the size and set cursor back to begining (SEEK_SET)
+    fseek(fileptr,0,SEEK_END);
+    size_t filesize = ftell(fileptr);
+    fseek(fileptr,0,SEEK_SET);
+    return filesize;
 }
 
 uint32_t Convert_bigEndian(uint8_t *data,int offset)
@@ -34,7 +38,7 @@ uint32_t Convert_bigEndian(uint8_t *data,int offset)
     return((uint32_t)data[offset] << 24 | (uint32_t)data[offset+1] << 16 | (uint32_t)data[offset+2] << 8 | (uint32_t)data[offset+3] );
 }
 
-png_header_t Get_PNG_Header(char* file_buffer)
+png_header_t Get_PNG_Header(char* file_buffer, size_t filesize)
 {
     png_header_t png_header;
 
@@ -68,6 +72,8 @@ png_header_t Get_PNG_Header(char* file_buffer)
     // IDAT chunk data size
     png_header.idatSize = Convert_bigEndian((uint8_t*)file_buffer,INDEX_START_IDAT_SIZE);
 
+    // Total size of the file
+    png_header.totalSize = filesize;
 
     return png_header;
 }

@@ -9,22 +9,24 @@ int main()
 {
     png_header_t png_header;
     char in_buffer[MAX_USER_INPUT];
-    unsigned char in_file[MAX_BUFFER_SIZE];
     FILE *fileptr;
 
-    // Ask file and open.
+    // Ask file.
     fgets(in_buffer,MAX_USER_INPUT,stdin);
     in_buffer[strcspn(in_buffer,"\n")] = '\0';
+
+    // Open file 
     fileptr = fopen(in_buffer,"rb");
 
+    // Allocate memory for buffer and get total size.
+    size_t filesize = Get_Total_Image_Size(fileptr);
+    char* file_buffer = malloc(filesize);
+
     // Read binary data into file buffer
-    fread(in_file,1,MAX_BUFFER_SIZE,fileptr);
+    fread(file_buffer,1,filesize,fileptr);
 
     // Fill the header struct
-    png_header = Get_PNG_Header((char*)in_file);
-
-    // Get the total image size
-    Get_Total_Image_Size((char*)in_file,fileptr);
+    png_header = Get_PNG_Header(file_buffer,filesize);
 
     // Print
     Set_Blue_Text();

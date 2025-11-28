@@ -31,7 +31,7 @@ typedef struct PNG_HEADER
     uint32_t chunkdata;
     uint32_t width;
     uint32_t height;
-    uint32_t totalSize;
+    size_t totalSize;
     uint8_t bitDepth;
     uint8_t colorType;
     uint8_t compression;
@@ -46,8 +46,8 @@ void Set_Red_Text();
 void Clean_();
 
 void Print_Header_Stats(png_header_t png_hdr);
-void Get_Total_Image_Size(char* file_buffer, FILE *fileptr);
+size_t Get_Total_Image_Size(FILE *fileptr);
 uint32_t Convert_bigEndian(uint8_t *data,int offset);
-png_header_t Get_PNG_Header(char* file_buffer);
+png_header_t Get_PNG_Header(char* file_buffer, size_t filesize);
 
 #endif
