@@ -9,6 +9,7 @@
 
 #define MAX_BUFFER_SIZE     	8192        // Maximum image size
 #define MAX_USER_INPUT          50          // Maximum user input path
+
 #define INDEX_START_PNG         1           // Start at 1 since PNG start at [1].
 #define INDEX_START_IHDR        12          // IHDR chunk start
 #define INDEX_START_WIDTH       16          // Width of the image in pixels. (4byte integers).
@@ -18,6 +19,10 @@
 #define INDEX_START_COMPMET     26          // Indicates the method used to compress the image data. (1byte integer). Always zero.
 #define INDEX_START_FILTMET     27          // Indicates the preprocessing method applied to the image data before compression. (1byte integer). Always zero.
 #define INDEX_START_INTERMET    28          // Indicates the transmission order of the image data. (1byte integer). 0 (no interlace) or 1 (Adam7 interlace).
+
+#define INDEX_START_IDAT_SIZE   46          // Size of IDAT 
+#define INDEX_START_IDAT        50          // IDAT chunk start
+
 
 typedef struct PNG_HEADER
 {
@@ -32,6 +37,8 @@ typedef struct PNG_HEADER
     uint8_t compression;
     uint8_t filter;
     uint8_t interlace;
+    uint32_t idatSize;
+
 }png_header_t;
 
 void Set_Blue_Text();
@@ -39,7 +46,8 @@ void Set_Red_Text();
 void Clean_();
 
 void Print_Header_Stats(png_header_t png_hdr);
-uint32_t covert_bigEndian(uint8_t *data,int offset);
+void Get_Total_Image_Size(char* file_buffer, FILE *fileptr);
+uint32_t Convert_bigEndian(uint8_t *data,int offset);
 png_header_t Get_PNG_Header(char* file_buffer);
 
 #endif

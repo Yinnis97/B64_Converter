@@ -20,12 +20,17 @@ int main()
     // Read binary data into file buffer
     fread(in_file,1,MAX_BUFFER_SIZE,fileptr);
 
+    // Fill the header struct
     png_header = Get_PNG_Header((char*)in_file);
+
+    // Get the total image size
+    Get_Total_Image_Size((char*)in_file,fileptr);
 
     // Print
     Set_Blue_Text();
     Print_Header_Stats(png_header);
     
+    // Close file and clean text
     fclose(fileptr);
     Clean_();
 

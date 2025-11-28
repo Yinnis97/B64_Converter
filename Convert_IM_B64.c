@@ -2,16 +2,38 @@
 
 void Print_Header_Stats(png_header_t png_hdr)
 {
-    printf(" %s\n %s\n Width %u\n Height : %u\n",
-        png_hdr.png_sign,png_hdr.IHDR_verify,
-        png_hdr.width,png_hdr.height);
+    printf("Is a PNG : ");
+    if(strcmp(png_hdr.png_sign,"PNG") == 0)
+    {
+        printf("Yes\n");
+        printf("Width               : %u pixels\n",png_hdr.width);
+        printf("Height              : %u pixels\n",png_hdr.height);
+        printf("Bit depth           : %d\n",png_hdr.bitDepth);
+        printf("Color Type          : %d\n",png_hdr.colorType );
+        printf("Compression method  : %d\n",png_hdr.compression);
+        printf("Filter method       : %d\n",png_hdr.filter);
+        printf("Interlace method    : %d\n",png_hdr.interlace);
+        //printf("IDAT chunk size     : %u",png_hdr.idatSize);
+    }
+    else
+    {
+        printf("No\n");
+        printf("Stats won't be shown since this is not a correct format.\n");
+    }
 }
 
-uint32_t covert_bigEndian(uint8_t *data,int offset)
+void Get_Total_Image_Size(char* file_buffer,FILE *fileptr)
+{
+    (void) file_buffer; 
+    (void) fileptr;
+}
+
+uint32_t Convert_bigEndian(uint8_t *data,int offset)
 {
     // Reads the big endian value from the file, every byte and coverts. 
     return((uint32_t)data[offset] << 24 | (uint32_t)data[offset+1] << 16 | (uint32_t)data[offset+2] << 8 | (uint32_t)data[offset+3] );
 }
+
 png_header_t Get_PNG_Header(char* file_buffer)
 {
     png_header_t png_header;
@@ -23,10 +45,10 @@ png_header_t Get_PNG_Header(char* file_buffer)
     strncpy_s(png_header.IHDR_verify,5,file_buffer+INDEX_START_IHDR,4);
 
     // Width starts at byte 16 (16-19)
-    png_header.width = covert_bigEndian((uint8_t*)file_buffer,INDEX_START_WIDTH);
+    png_header.width = Convert_bigEndian((uint8_t*)file_buffer,INDEX_START_WIDTH);
 
     // Height starts at byte 20 (20-23)
-    png_header.height = covert_bigEndian((uint8_t*)file_buffer,INDEX_START_HEIGHT);
+    png_header.height = Convert_bigEndian((uint8_t*)file_buffer,INDEX_START_HEIGHT);
 
     // Bit depth
     png_header.bitDepth = (uint8_t)file_buffer[INDEX_START_BITDEPTH];
@@ -42,6 +64,10 @@ png_header_t Get_PNG_Header(char* file_buffer)
 
     // Interlance method
     png_header.interlace = (uint8_t)file_buffer[INDEX_START_INTERMET];
+
+    // IDAT chunk data size
+    png_header.idatSize = Convert_bigEndian((uint8_t*)file_buffer,INDEX_START_IDAT_SIZE);
+
 
     return png_header;
 }
