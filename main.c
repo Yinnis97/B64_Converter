@@ -32,6 +32,12 @@ int main()
     Set_Blue_Text();
     Print_Header_Stats(png_header);
     
+    // Convert to a 6 bit for b64
+    ByteTo6Bit(file_buffer,filesize);
+
+    // Convert to characters
+
+
     // Close file and clean text
     fclose(fileptr);
     Clean_();

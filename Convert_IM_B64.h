@@ -48,6 +48,7 @@ void Clean_();
 void Print_Header_Stats(png_header_t png_hdr);
 size_t Get_Total_Image_Size(FILE *fileptr);
 uint32_t Convert_bigEndian(uint8_t *data,int offset);
+void ByteTo6Bit(char* file_buffer, size_t filesize);
 png_header_t Get_PNG_Header(char* file_buffer, size_t filesize);
 
 #endif
