@@ -7,6 +7,8 @@
 #include "stdlib.h"
 #include "stdint.h"
 
+//#define DEBUG_Y
+
 #define MAX_BUFFER_SIZE     	8192        // Maximum image size
 #define MAX_USER_INPUT          50          // Maximum user input path
 
@@ -23,6 +25,8 @@
 #define INDEX_START_IDAT_SIZE   46          // Size of IDAT 
 #define INDEX_START_IDAT        50          // IDAT chunk start
 
+static const char Base64_Table[] =
+"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 typedef struct PNG_HEADER
 {
@@ -38,7 +42,6 @@ typedef struct PNG_HEADER
     uint8_t filter;
     uint8_t interlace;
     uint32_t idatSize;
-
 }png_header_t;
 
 void Set_Blue_Text();
@@ -48,7 +51,8 @@ void Clean_();
 void Print_Header_Stats(png_header_t png_hdr);
 size_t Get_Total_Image_Size(FILE *fileptr);
 uint32_t Convert_bigEndian(uint8_t *data,int offset);
-void ByteTo6Bit(char* file_buffer, size_t filesize);
+void ByteTo6Bit(char* file_buffer, size_t filesize, unsigned char* b64_buffer, size_t b64_filesize);
+void BitToB64(unsigned char* b64_buffer, size_t b64_filesize);
 png_header_t Get_PNG_Header(char* file_buffer, size_t filesize);
 
 #endif

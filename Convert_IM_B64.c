@@ -38,33 +38,39 @@ uint32_t Convert_bigEndian(uint8_t *data,int offset)
     return((uint32_t)data[offset] << 24 | (uint32_t)data[offset+1] << 16 | (uint32_t)data[offset+2] << 8 | (uint32_t)data[offset+3] );
 }
 
-void ByteTo6Bit(char* file_buffer, size_t filesize)
+void ByteTo6Bit(char* file_buffer, size_t filesize, unsigned char* b64_buffer, size_t b64_filesize)
 {
-    (void) file_buffer;
-    size_t b64filesize = (filesize * 8) / 6;
-    char* b64_buffer = malloc(b64filesize);
+    (void) b64_filesize;
 
     size_t i;
     size_t j;
     // 8 bit to 6 bit using 24 bit, 24/8 = 3, 24/6 = 4.
     for(i = 0, j = 0; i < filesize; i+=3, j+=4)
     {
+        // Check bounds before using, if out of bounds just use 0.
+        unsigned char byte0 = file_buffer[i];
+        unsigned char byte1 = (i + 1 < filesize) ? file_buffer[i+1] : 0;
+        unsigned char byte2 = (i + 2 < filesize) ? file_buffer[i+2] : 0;
+
         // First 6 bits into b64_buffer[0].
-        b64_buffer[j] = (file_buffer[i] >> 2) & 0x3F;
+        b64_buffer[j] = (byte0  >> 2) & 0x3F;
         // Last 2 bits of file_buffer[0] and first 4 bits of file_buffer[1] into b64_buffer[1].
-        b64_buffer[j+1] = (((file_buffer[i] & 0x03) << 4) | (file_buffer[i+1] >> 4)) & 0x3F; 
+        b64_buffer[j+1] = (((byte0  & 0x03) << 4) | (byte1 >> 4)) & 0x3F; 
         // Last 4 bits of file_buffer[1] and first 2 bits of file_buffer[2] into b64_buffer[2].
-        b64_buffer[j+2] = (((file_buffer[i+1] & 0x0F ) << 2) | ((file_buffer[i+2] & 0xC0) >> 6)) & 0x3F;
+        b64_buffer[j+2] = (((byte1 & 0x0F) << 2) | ((byte2 & 0xC0) >> 6)) & 0x3F;
         // Last 6 bits of file_buffer[2] into b64_buffer[3].
-        b64_buffer[j+3] = file_buffer[i+2] & 0x3F;
+        b64_buffer[j+3] = byte2 & 0x3F;
     }
+}
 
-    printf("filebuffer[0] : %x --- b64buffer[0] : %x\n",file_buffer[0], b64_buffer[0]);
-    printf("filebuffer[1] : %x --- b64buffer[1] : %x\n",file_buffer[1], b64_buffer[1]);
-    printf("filebuffer[2] : %x --- b64buffer[2] : %x\n",file_buffer[2], b64_buffer[2]);
-    printf("filebuffer[3] : %x --- b64buffer[3] : %x\n",file_buffer[3], b64_buffer[3]);
-
-    free(b64_buffer);
+void BitToB64(unsigned char* b64_buffer, size_t b64_filesize)
+{
+    // ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/
+    size_t i;
+    for(i = 0; i < b64_filesize; i++)
+    {
+        printf("%c",Base64_Table[b64_buffer[i]]);
+    }
 }
 
 png_header_t Get_PNG_Header(char* file_buffer, size_t filesize)
