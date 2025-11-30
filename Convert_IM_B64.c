@@ -2,25 +2,14 @@
 
 void Print_Header_Stats(png_header_t png_hdr)
 {
-    printf("Is a PNG : ");
-    if(strcmp(png_hdr.png_sign,"PNG") == 0)
-    {
-        printf("Yes\n");
-        printf("Width               : %u pixels\n",png_hdr.width);
-        printf("Height              : %u pixels\n",png_hdr.height);
-        printf("Bit depth           : %d\n",png_hdr.bitDepth);
-        printf("Color Type          : %d\n",png_hdr.colorType );
-        printf("Compression method  : %d\n",png_hdr.compression);
-        printf("Filter method       : %d\n",png_hdr.filter);
-        printf("Interlace method    : %d\n",png_hdr.interlace);
-        printf("Total size          : %llu bytes\n",png_hdr.totalSize);
-        //printf("IDAT chunk size     : %u",png_hdr.idatSize);
-    }
-    else
-    {
-        printf("No\n");
-        printf("Stats won't be shown since this is not a correct format.\n");
-    }
+    printf("Width               : %u pixels\n",png_hdr.width);
+    printf("Height              : %u pixels\n",png_hdr.height);
+    printf("Bit depth           : %d\n",png_hdr.bitDepth);
+    printf("Color Type          : %d\n",png_hdr.colorType );
+    printf("Compression method  : %d\n",png_hdr.compression);
+    printf("Filter method       : %d\n",png_hdr.filter);
+    printf("Interlace method    : %d\n",png_hdr.interlace);
+    printf("Total size          : %llu bytes\n",png_hdr.totalSize);
 }
 
 size_t Get_Total_Image_Size(FILE *fileptr)
@@ -73,44 +62,57 @@ void BitToB64(unsigned char* b64_buffer, size_t b64_filesize)
     }
 }
 
-png_header_t Get_PNG_Header(char* file_buffer, size_t filesize)
+png_result_t Get_PNG_Header(char* file_buffer, size_t filesize)
 {
-    png_header_t png_header;
+    png_result_t png_result;
 
     // PNG signature first 8 bytes (0-7)
-    strncpy_s(png_header.png_sign,4,file_buffer+INDEX_START_PNG,3);
+    strncpy_s(png_result.png_header.png_sign,4,file_buffer+INDEX_START_PNG,3);
 
-    // IHDR starts at byte 12 (12-15)
-    strncpy_s(png_header.IHDR_verify,5,file_buffer+INDEX_START_IHDR,4);
+    // Check if the image is a PNG.
+    if(strcmp(png_result.png_header.png_sign,"PNG") == 0)
+    {
+        // IHDR starts at byte 12 (12-15)
+        strncpy_s(png_result.png_header.IHDR_verify,5,file_buffer+INDEX_START_IHDR,4);
 
-    // Width starts at byte 16 (16-19)
-    png_header.width = Convert_bigEndian((uint8_t*)file_buffer,INDEX_START_WIDTH);
+        // Width starts at byte 16 (16-19)
+        png_result.png_header.width = Convert_bigEndian((uint8_t*)file_buffer,INDEX_START_WIDTH);
 
-    // Height starts at byte 20 (20-23)
-    png_header.height = Convert_bigEndian((uint8_t*)file_buffer,INDEX_START_HEIGHT);
+        // Height starts at byte 20 (20-23)
+        png_result.png_header.height = Convert_bigEndian((uint8_t*)file_buffer,INDEX_START_HEIGHT);
 
-    // Bit depth
-    png_header.bitDepth = (uint8_t)file_buffer[INDEX_START_BITDEPTH];
+        // Bit depth
+        png_result.png_header.bitDepth = (uint8_t)file_buffer[INDEX_START_BITDEPTH];
 
-    // Color type
-    png_header.colorType = (uint8_t)file_buffer[INDEX_START_COLTYPE];
+        // Color type
+        png_result.png_header.colorType = (uint8_t)file_buffer[INDEX_START_COLTYPE];
 
-    // Compression method
-    png_header.compression = (uint8_t)file_buffer[INDEX_START_COMPMET];
+        // Compression method
+        png_result.png_header.compression = (uint8_t)file_buffer[INDEX_START_COMPMET];
 
-    // Filter method
-    png_header.filter = (uint8_t)file_buffer[INDEX_START_FILTMET];
+        // Filter method
+        png_result.png_header.filter = (uint8_t)file_buffer[INDEX_START_FILTMET];
 
-    // Interlance method
-    png_header.interlace = (uint8_t)file_buffer[INDEX_START_INTERMET];
+        // Interlance method
+        png_result.png_header.interlace = (uint8_t)file_buffer[INDEX_START_INTERMET];
 
-    // IDAT chunk data size
-    png_header.idatSize = Convert_bigEndian((uint8_t*)file_buffer,INDEX_START_IDAT_SIZE);
+        // IDAT chunk data size
+        png_result.png_header.idatSize = Convert_bigEndian((uint8_t*)file_buffer,INDEX_START_IDAT_SIZE);
 
-    // Total size of the file
-    png_header.totalSize = filesize;
+        // Total size of the file
+        png_result.png_header.totalSize = filesize;
+        
+        // Is a PNG.
+        png_result.status = 0;
+    }
+    else
+    {
+        printf("Image is not a PNG, please enter a correct format.\n");
+        // Not a PNG.
+        png_result.status = 1;
+    }
 
-    return png_header;
+    return png_result;
 }
 
 void Set_Blue_Text()

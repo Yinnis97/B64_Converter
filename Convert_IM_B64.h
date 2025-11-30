@@ -44,6 +44,12 @@ typedef struct PNG_HEADER
     uint32_t idatSize;
 }png_header_t;
 
+typedef struct PNG_RESULT
+{
+    png_header_t png_header;
+    uint8_t status;
+}png_result_t;
+
 void Set_Blue_Text();
 void Set_Red_Text();
 void Clean_();
@@ -53,6 +59,6 @@ size_t Get_Total_Image_Size(FILE *fileptr);
 uint32_t Convert_bigEndian(uint8_t *data,int offset);
 void ByteTo6Bit(char* file_buffer, size_t filesize, unsigned char* b64_buffer, size_t b64_filesize);
 void BitToB64(unsigned char* b64_buffer, size_t b64_filesize);
-png_header_t Get_PNG_Header(char* file_buffer, size_t filesize);
+png_result_t Get_PNG_Header(char* file_buffer, size_t filesize);
 
 #endif
