@@ -12,6 +12,7 @@ int main()
     FILE *fileptr;
 
     // Ask file.
+    printf("Enter the path of the image : \n");
     fgets(in_buffer,MAX_USER_INPUT,stdin);
     in_buffer[strcspn(in_buffer,"\n")] = '\0';
 

@@ -107,6 +107,7 @@ png_result_t Get_PNG_Header(char* file_buffer, size_t filesize)
     }
     else
     {
+        Set_Red_Text();
         printf("Image is not a PNG, please enter a correct format.\n");
         // Not a PNG.
         png_result.status = 1;

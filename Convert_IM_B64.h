@@ -8,8 +8,6 @@
 #include "stdint.h"
 
 //#define DEBUG_Y
-
-#define MAX_BUFFER_SIZE     	8192        // Maximum image size
 #define MAX_USER_INPUT          50          // Maximum user input path
 
 #define INDEX_START_PNG         1           // Start at 1 since PNG start at [1].
