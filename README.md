@@ -10,6 +10,7 @@ As for all binary-to-text encodings, Base64 encoding enables transmitting binary
 
 ### 1. How to build
 ```cmd
+git clone https://github.com/Yinnis97/B64_Converter
 make
 png_reader.exe
 ```
